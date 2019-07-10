@@ -9,9 +9,11 @@ class Player(object):
         self.name = name
         self.current_room = current_room
         self.is_playing = True
+        self.inventory = []
 
-    def examine(self, obj):
-        print(obj)
+    def inspect(self, item):
+        print(item.description)
 
-    # def search(self):
-    #     print(self.location['secrets'])
+    def check_gear(self):
+        for item in self.inventory:
+            print(item.name)

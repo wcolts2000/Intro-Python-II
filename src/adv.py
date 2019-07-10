@@ -7,11 +7,28 @@ import random
 
 from room import Room
 from player import Player
+from item import Item
+
+
+# Declare all the items
+
+items = {
+    'lamp': Item('lamp', 'an oil lamp with a wick still intact'),
+    'oil': Item('oil', 'a vial of lamp oil'),
+    'key': Item('key', 'a rusty key'),
+    'rock': Item('rock', 'an oddly shaped rock...Perhaps it was chisseled to fit something.'),
+    'parchment': Item('parchment', 'An old weathered piece of parchment, looks as though it may have once had something on it'),
+    'basket': Item('basket', 'A precariously placed basket...wait!!! Did it just move a little?'),
+    'antivenom': Item('antivenom', 'a vial of antivenom'),
+    'cover': Item('cover', 'There appears to be a loose stone in the wall covering something'),
+}
+
+
 # Declare all the rooms
 
 room = {
     'outside':  Room("Outside The Cave Entrance",
-                     "North of you, the cave mouth beckons", ['lamp', 'oil', 'key', 'rock']),
+                     "North of you, the cave mouth beckons", []),
 
     'foyer':    Room("Foyer", """Dim light filters in from the south. Dusty
 passages run north and east.""", []),
@@ -29,6 +46,14 @@ earlier adventurers. The only exit is to the south.""", []),
 }
 
 
+# Link items to rooms
+
+room['outside'].items = [items['key'],
+                         items['lamp'], items['rock'], items['oil']]
+room['foyer'].items = [items['parchment']]
+room['narrow'].items = [items['basket']]
+room['treasure'].items = [items['antivenom'], items['cover']]
+
 # Link rooms together
 
 room['outside'].n_to = room['foyer']
@@ -39,6 +64,7 @@ room['overlook'].s_to = room['foyer']
 room['narrow'].w_to = room['foyer']
 room['narrow'].n_to = room['treasure']
 room['treasure'].s_to = room['narrow']
+
 
 #
 # Main
@@ -70,17 +96,16 @@ def print_room_items():
     if len(my_player.current_room.items) == 0:
         print('There is nothing here worth noting.')
     else:
-        items = ''
+        room_items = ''
         for item in my_player.current_room.items:
-            items += item + " "
-        print('In this area you can see ' + items)
+            room_items += item.name + " "
+        print('In this area you can see ' + room_items)
 
 
 def prompt(my_player):
     print('\n' + 'What would you like to do?')
     action = input('> ')
     # acceptable_actions = ['move', 'go', 'travel', 'walk',
-    print_room_items()
     #                       'quit', 'inspect', 'interact', 'look', 'examine']
     actionArr = action.split(' ')
     # while action.lower() not in acceptable_actions:
@@ -90,18 +115,49 @@ def prompt(my_player):
         if action.lower() in ['quit', 'q']:
             os.system('clear')
             sys.exit()
-        elif action.lower() == ['ex', 'examine']:
-            # print_room_items(my_player)
+        elif action.lower() in ['gear', 'g', 'i', 'inventory']:
+            my_player.check_gear()
+        elif action.lower() in ['ex', 'examine']:
             print_room_items()
+            # print_room_items()
         elif action.lower() in ['n', 's', 'e', 'w', 'north', 'south', 'east', 'west', 'up', 'down', 'left', 'right']:
             os.system('clear')
             player_move(action.lower())
+    elif len(actionArr) == 2:
+        if actionArr[0].lower() in ['get', 'take', 'grab', 'steal']:
+            take_item(actionArr[1])
+        elif actionArr[0].lower() in ['drop', 'remove', 'throw', 'steal']:
+            drop_item(actionArr[1])
     else:
         print('thats too many right now')
         # acceptable_actions = ['move', 'go', 'travel', 'walk',
         #                       'quit', 'inspect', 'interact', 'look', 'examine']
     # elif action.lower() in ['inspect', 'interact', 'look', 'examine']:
     #     self.player_examine(action.lower())
+
+
+def take_item(item):
+    #     for x in arr:
+    #   if item in x.values():
+    # print(x.values())
+    # for i in my_player.current_room.items:
+    #     if item in my_player.current_room.items:
+    #         my_player.inventory.append(items[item])
+    #         my_player.current_room.items.remove(items[item])
+    #     else:
+    #         print('There is nothing by that name in this location')
+    my_player.inventory.append(items[item])
+    my_player.current_room.items.remove(items[item])
+
+
+def drop_item(item):
+    my_player.current_room.items.append(items[item])
+    my_player.inventory.remove(items[item])
+
+
+def no_access():
+    print('\n' + 'There is nothing in that direction to move to')
+    prompt(my_player)
 
 
 def player_move(direction):
@@ -111,29 +167,25 @@ def player_move(direction):
             direction = my_player.current_room.n_to
             movement_handler(direction)
         else:
-            print('\n' + 'There is nothing in that direction to move to')
-            prompt(my_player)
+            no_access()
     elif direction in ['left', 'west', 'w']:
         if hasattr(my_player.current_room, 'w_to'):
             direction = my_player.current_room.w_to
             movement_handler(direction)
         else:
-            print('\n' + 'There is nothing in that direction to move to')
-            prompt(my_player)
+            no_access()
     elif direction in ['right', 'east', 'e']:
         if hasattr(my_player.current_room, 'e_to'):
             direction = my_player.current_room.e_to
             movement_handler(direction)
         else:
-            print('\n' + 'There is nothing in that direction to move to')
-            prompt(my_player)
+            no_access()
     elif direction in ['down', 'south', 's']:
         if hasattr(my_player.current_room, 's_to'):
             direction = my_player.current_room.s_to
             movement_handler(direction)
         else:
-            print('\n' + 'There is nothing in that direction to move to')
-            prompt(my_player)
+            no_access()
 
 
 def movement_handler(destination):
@@ -184,9 +236,9 @@ def title_screen_selections():
 
 
 def header():
-    print('#############################################')
-    print('#       Welcome to "Adventure Lurks"!       #')
-    print('#############################################')
+    print('#################################################')
+    print('#         Welcome to "Adventure Lurks"!         #')
+    print('#################################################' + '\n')
 
 
 def title_screen():
@@ -207,6 +259,25 @@ def help_menu():
     print('  - Good luck and have fun!!! -               ')
     print('  - Play - Help - Quit - ')
     title_screen_selections()
+
+
+def cave_mouth():
+    print('OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO')
+    print('OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO')
+    print('OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOoOOooooooOoOOoOOOOO')
+    print('OOOOOOOOOOOOOOOOOOOOOOOOOOOoooo/[[/**`\ooooooOOOO')
+    print('OOOOOoOOOOOOOOOOOOOOOOOOOOoo`*.      ..**,\oOOOOO')
+    print('O/OO^=[OOOOOOOOOOOOOOOo//o/`.           .**ooOOOO')
+    print('O///O=*=OOOOOOOOOOOOO^/O/ ..             .,,OooOO')
+    print('O/O/O\,OOOOOOOOOOOO[O=Oo` .              .]/oOOOO')
+    print('/.O`=.=OOOOOOOOOOOO^O=OO\`,.          .,.=o^OOOOO')
+    print('/\O\O/=OOOOOOOOOOOO\/.O\/`/. ./o`  .\=o/OOO[/OOO/')
+    print('`OO,O.O.O\,\OOOOOO\O\]//o[\  ...`..``\=`,\OO[^,O/')
+    print('O\O\`\/\,/` /]`        ,[[ =`.   ` /, `,.,//O/OOO')
+    print('/,O//OOOO],[.]`                    .///`OOOOOOOOO')
+    print('\OOOOOOOOOO][=/[.             `]O\OOOOOOOOOOOOOOO')
+    print('/OOOOOOOOO/\OO]/O\` ,``]^\OOOOOOOOOOOOOOOOOOOOOOO')
+    print('OOOOOOOOOOOOOOOOO\=OOOO\OO^\OOOOOOOOOOOOOOOOOOOOO' + '\n')
 
 
 #######################################
@@ -248,6 +319,7 @@ def setup_game():
         time.sleep(0.2)
     os.system('clear')
     header()
+    cave_mouth()
     print_location()
     main_game_loop(player_name)
 

@@ -63,35 +63,35 @@ that are currently in that room.
 [x] - Add functionality to the main loop that prints out all the items that are
 visible to the player when they are in that room.
 
-- Add capability to add `Item`s to the player's inventory. The inventory can
-  also be a `list` of items "in" the player, similar to how `Item`s can be in a
-  `Room`.
+[x] - Add capability to add `Item`s to the player's inventory. The inventory can
+also be a `list` of items "in" the player, similar to how `Item`s can be in a
+`Room`.
 
-- Add a new type of sentence the parser can understand: two words.
+[x] - Add a new type of sentence the parser can understand: two words.
 
-  - Until now, the parser could just understand one sentence form:
+[x] - Until now, the parser could just understand one sentence form:
 
     `verb`
 
     such as "n" or "q".
 
-  - But now we want to add the form:
+[x] - But now we want to add the form:
 
     `verb` `object`
 
     such as "take coins" or "drop sword".
 
-  - Split the entered command and see if it has 1 or 2 words in it to determine
-    if it's the first or second form.
+[x] - Split the entered command and see if it has 1 or 2 words in it to determine
+if it's the first or second form.
 
-- Implement support for the verb `get` followed by an `Item` name. This will be
-  used to pick up `Item`s.
+[x] - Implement support for the verb `get` followed by an `Item` name. This will be
+used to pick up `Item`s.
 
-  - If the user enters `get` or `take` followed by an `Item` name, look at the
-    contents of the current `Room` to see if the item is there.
+[x] - If the user enters `get` or `take` followed by an `Item` name, look at the
+contents of the current `Room` to see if the item is there.
 
-    - If it is there, remove it from the `Room` contents, and add it to the
-      `Player` contents.
+[x] - If it is there, remove it from the `Room` contents, and add it to the
+`Player` contents.
 
     - If it's not there, print an error message telling the user so.
 
@@ -108,8 +108,8 @@ visible to the player when they are in that room.
 - Implement support for the verb `drop` followed by an `Item` name. This is the
   opposite of `get`/`take`.
 
-- Add the `i` and `inventory` commands that both show a list of items currently
-  carried by the player.
+[x] - Add the `i` and `inventory` commands that both show a list of items currently
+carried by the player.
 
 ## Stretch Goals
 
