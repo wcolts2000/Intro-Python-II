@@ -10,22 +10,22 @@ from player import Player
 # Declare all the rooms
 
 room = {
-    'outside':  Room("Outside Cave Entrance",
-                     "North of you, the cave mount beckons"),
+    'outside':  Room("Outside The Cave Entrance",
+                     "North of you, the cave mouth beckons", ['lamp', 'oil', 'key', 'rock']),
 
     'foyer':    Room("Foyer", """Dim light filters in from the south. Dusty
-passages run north and east."""),
+passages run north and east.""", []),
 
     'overlook': Room("Grand Overlook", """A steep cliff appears before you, falling
 into the darkness. Ahead to the north, a light flickers in
-the distance, but there is no way across the chasm."""),
+the distance, but there is no way across the chasm.""", []),
 
     'narrow':   Room("Narrow Passage", """The narrow passage bends here from west
-to north. The smell of gold permeates the air."""),
+to north. The smell of gold permeates the air.""", []),
 
     'treasure': Room("Treasure Chamber", """You've found the long-lost treasure
 chamber! Sadly, it has already been completely emptied by
-earlier adventurers. The only exit is to the south."""),
+earlier adventurers. The only exit is to the south.""", []),
 }
 
 
@@ -43,11 +43,13 @@ room['treasure'].s_to = room['narrow']
 #
 # Main
 #
+
 my_player = Player('', room['outside'])
 
 
 def main():
     # Make a new player object that is currently in the 'outside' room.
+    os.system('clear')
     title_screen()
 
     # if __name__ == '__main__':
@@ -56,32 +58,43 @@ def main():
     #
 
 
-def print_location(my_player):
-    # print(room['outside'])
-    # print(room['foyer'])
-    # print(room['overlook'])
-    # print(room['narrow'])
-    # print(room['treasure'])
-    if my_player.location.name == "Outside Cave Entrance":
-        print('You stand ' + my_player.location.name)
+def print_location():
+    if my_player.current_room.name == "Outside The Cave Entrance":
+        print('You stand ' + my_player.current_room.name)
     else:
-        print('You enter the ' + my_player.location.name)
-    print(my_player.location.description)
+        print('You enter the ' + my_player.current_room.name)
+    print(my_player.current_room.description)
 
 
-def prompt():
-    print('Input a command')
+def print_room_items():
+    if len(my_player.current_room.items) == 0:
+        print('There is nothing here worth noting.')
+    else:
+        items = ''
+        for item in my_player.current_room.items:
+            items += item + " "
+        print('In this area you can see ' + items)
+
+
+def prompt(my_player):
+    print('\n' + 'What would you like to do?')
     action = input('> ')
     # acceptable_actions = ['move', 'go', 'travel', 'walk',
+    print_room_items()
     #                       'quit', 'inspect', 'interact', 'look', 'examine']
     actionArr = action.split(' ')
     # while action.lower() not in acceptable_actions:
     #     print('Unknown action, try again.\n')
     #     action = input('> ')
     if len(actionArr) == 1:
-        if action.lower() == 'quit' or action.lower() == 'q':
+        if action.lower() in ['quit', 'q']:
+            os.system('clear')
             sys.exit()
+        elif action.lower() == ['ex', 'examine']:
+            # print_room_items(my_player)
+            print_room_items()
         elif action.lower() in ['n', 's', 'e', 'w', 'north', 'south', 'east', 'west', 'up', 'down', 'left', 'right']:
+            os.system('clear')
             player_move(action.lower())
     else:
         print('thats too many right now')
@@ -94,46 +107,47 @@ def prompt():
 def player_move(direction):
     # ask = 'Where would you like to move to?\n'
     if direction in ['up', 'north', 'n']:
-        if hasattr(my_player.location, 'n_to'):
-            direction = my_player.location.n_to
+        if hasattr(my_player.current_room, 'n_to'):
+            direction = my_player.current_room.n_to
             movement_handler(direction)
         else:
             print('\n' + 'There is nothing in that direction to move to')
-            prompt()
+            prompt(my_player)
     elif direction in ['left', 'west', 'w']:
-        if hasattr(my_player.location, 'w_to'):
-            direction = my_player.location.w_to
+        if hasattr(my_player.current_room, 'w_to'):
+            direction = my_player.current_room.w_to
             movement_handler(direction)
         else:
             print('\n' + 'There is nothing in that direction to move to')
-            prompt()
+            prompt(my_player)
     elif direction in ['right', 'east', 'e']:
-        if hasattr(my_player.location, 'e_to'):
-            direction = my_player.location.e_to
+        if hasattr(my_player.current_room, 'e_to'):
+            direction = my_player.current_room.e_to
             movement_handler(direction)
         else:
             print('\n' + 'There is nothing in that direction to move to')
-            prompt()
+            prompt(my_player)
     elif direction in ['down', 'south', 's']:
-        if hasattr(my_player.location, 's_to'):
-            direction = my_player.location.s_to
+        if hasattr(my_player.current_room, 's_to'):
+            direction = my_player.current_room.s_to
             movement_handler(direction)
         else:
             print('\n' + 'There is nothing in that direction to move to')
-            prompt()
+            prompt(my_player)
 
 
 def movement_handler(destination):
     print(f'\n You have moved to the {destination.name}')
-    my_player.location = destination
-    print_location(my_player)
+    my_player.current_room = destination
+    os.system('clear')
+    header()
+    print_location()
 
 
-def main_game_loop():
+def main_game_loop(player_name):
+    my_player.name = player_name
     while my_player.is_playing:
-        header()
-        print_location(my_player)
-        prompt()
+        prompt(my_player)
     # * Prints the current room name
     # * Prints the current description (the textwrap module might be useful here).
     # * Waits for user input and decides what to do.
@@ -144,33 +158,32 @@ def main_game_loop():
     # If the user enters "q", quit the game.
 
     if __name__ == '__main__':
-        main_game_loop()
-#
+        main_game_loop(player_name)
+
+
+#######################################
 #  Terminal Output Helpers
-#
+#######################################
 
 
 def title_screen_selections():
     option = input('> ')
-    if option.lower() == ('play'):
-        setup_game()  # placeholder until written
-    elif option.lower() == ('help'):
+    if option.lower() in ['play', 'p']:
+        os.system('clear')
+        setup_game()
+    elif option.lower() in ['help', 'h']:
+        os.system('clear')
         help_menu()
-    elif option.lower() == ('quit'):
+    elif option.lower() in ['quit', 'q']:
+        os.system('clear')
         sys.exit()
-    while option.lower() not in ['play', 'help', 'quit']:
+    while option.lower() not in ['play', 'p', 'help', 'h', 'quit', 'q']:
+        os.system('clear')
         print("please enter a valid command.")
-        option - input('> ')
-        if option.lower() == ('play'):
-            setup_game()  # placeholder until written
-        elif option.lower() == ('help'):
-            help_menu()
-        elif option.lower() == ('quit'):
-            sys.exit()
+        title_screen_selections()
 
 
 def header():
-    os.system('clear')
     print('#############################################')
     print('#       Welcome to "Adventure Lurks"!       #')
     print('#############################################')
@@ -186,14 +199,19 @@ def title_screen():
 
 def help_menu():
     header()
-    print('    - Use up, down, left, right to move -    ')
-    print('    - Type commands to do them -             ')
-    print('    - Use "examine" to inspect something -   ')
-    print('    - Use "search" to look through a room -  ')
-    print('    - Use "quit" to stop the game -          ')
-    print('    - Good luck and have fun!!! -            ')
+    print('  - Type "play" or "p" to start the game -    ')
+    print('  - Use "n", "s", "e", "w" to move -          ')
+    print('  - Use "examine" or "ex" to inspect surroundings -   ')
+    print('  - Use "quit" or "q" to stop the game -      ')
+    print('  - Type 2 commands to interact -             ')
+    print('  - Good luck and have fun!!! -               ')
+    print('  - Play - Help - Quit - ')
     title_screen_selections()
 
+
+#######################################
+#  GAME SETUP
+#######################################
 
 def setup_game():
     os.system('clear')
@@ -228,8 +246,10 @@ def setup_game():
         sys.stdout.write(character)
         sys.stdout.flush()
         time.sleep(0.2)
-
-    main_game_loop()
+    os.system('clear')
+    header()
+    print_location()
+    main_game_loop(player_name)
 
 
 main()

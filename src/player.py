@@ -5,9 +5,9 @@ import sys
 
 class Player(object):
 
-    def __init__(self, name, location):
+    def __init__(self, name, current_room):
         self.name = name
-        self.location = location
+        self.current_room = current_room
         self.is_playing = True
 
     def examine(self, obj):
