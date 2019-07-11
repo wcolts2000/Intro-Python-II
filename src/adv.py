@@ -129,7 +129,7 @@ def prompt(my_player):
             else:
                 print("With no light, you can't see anything in here...")
         elif action.lower() in ['n', 's', 'e', 'w', 'north', 'south', 'east', 'west', 'up', 'down', 'left', 'right']:
-            player_move(action.lower())
+            my_player.player_move(action.lower(), movement_handler)
     elif len(actionArr) == 2:
         if actionArr[0].lower() in ['get', 'take', 'grab', 'steal']:
             take_item(actionArr[1])
@@ -160,40 +160,7 @@ def drop_item(item):
     my_player.inventory.remove(items[item])
 
 
-def no_access():
-    print('\n' + 'There is nothing in that direction to move to')
-    prompt(my_player)
-
-
-def player_move(direction):
-    if direction in ['up', 'north', 'n']:
-        if hasattr(my_player.current_room, 'n_to'):
-            direction = my_player.current_room.n_to
-            movement_handler(direction)
-        else:
-            no_access()
-    elif direction in ['left', 'west', 'w']:
-        if hasattr(my_player.current_room, 'w_to'):
-            direction = my_player.current_room.w_to
-            movement_handler(direction)
-        else:
-            no_access()
-    elif direction in ['right', 'east', 'e']:
-        if hasattr(my_player.current_room, 'e_to'):
-            direction = my_player.current_room.e_to
-            movement_handler(direction)
-        else:
-            no_access()
-    elif direction in ['down', 'south', 's']:
-        if hasattr(my_player.current_room, 's_to'):
-            direction = my_player.current_room.s_to
-            movement_handler(direction)
-        else:
-            no_access()
-
-
 def movement_handler(destination):
-    print(f'\n You have moved to the {destination.name}')
     my_player.current_room = destination
     system('clear')
     header()
@@ -203,16 +170,12 @@ def movement_handler(destination):
     else:
         if len(my_player.current_room.items):
             for i in my_player.current_room.items:
-                print('Firing in room items for loop')
                 if isinstance(i, Lightsource):
-                    print('Firing in isinstance')
                     my_player.current_room.is_light = True
                     generate_screen(my_player.current_room.name)
-        elif len(my_player.inventory):
-            print('Firing in player inventory for loop')
+        if len(my_player.inventory):
             for i in my_player.inventory:
                 if isinstance(i, Lightsource):
-                    print('Firing in isinstance')
                     my_player.current_room.is_light = True
                     generate_screen(my_player.current_room.name)
         else:
