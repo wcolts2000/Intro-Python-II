@@ -1,6 +1,5 @@
 # Write a class to hold player information, e.g. what room they are in
 # currently.
-import sys
 
 
 class Player(object):
@@ -16,4 +15,8 @@ class Player(object):
 
     def check_gear(self):
         for item in self.inventory:
-            print(item.name)
+            print('\n' + item.name + '\n')
+
+    def print_inventory(self):
+        print("You are carrying:\n  " +
+              ", ".join([item.name for item in self.inventory]) + "\n")

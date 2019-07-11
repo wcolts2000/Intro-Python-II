@@ -1,13 +1,12 @@
-import cmd
-import textwrap
-import sys
-import os
-import time
+from sys import stdout, exit
+from os import system
+from time import sleep
 import random
 
 from room import Room
 from player import Player
 from item import Item
+from splash_screen import *
 
 
 # Declare all the items
@@ -74,22 +73,25 @@ my_player = Player('', room['outside'])
 
 
 def main():
-    # Make a new player object that is currently in the 'outside' room.
-    os.system('clear')
-    title_screen()
+    system('clear')
+    title_screen(setup_game)
 
-    # if __name__ == '__main__':
-    #     main()
-    # Write a loop that:
-    #
+    if __name__ == '__main__':
+        main()
+
+
+def main_game_loop(player_name):
+    my_player.name = player_name
+    while my_player.is_playing:
+        prompt(my_player)
 
 
 def print_location():
     if my_player.current_room.name == "Outside The Cave Entrance":
-        print('You stand ' + my_player.current_room.name)
+        print('You stand ' + my_player.current_room.name + '\n')
     else:
-        print('You enter the ' + my_player.current_room.name)
-    print(my_player.current_room.description)
+        print('You enter the ' + my_player.current_room.name + '\n')
+    print(f'    > {my_player.current_room.description}' + '\n')
 
 
 def print_room_items():
@@ -98,30 +100,25 @@ def print_room_items():
     else:
         room_items = ''
         for item in my_player.current_room.items:
-            room_items += item.name + " "
-        print('In this area you can see ' + room_items)
+            room_items += item.name + ", "
+        print('In this area you can see: ' + '\n' + f'      {room_items[:-2]}')
 
 
 def prompt(my_player):
     print('\n' + 'What would you like to do?')
+
     action = input('> ')
-    # acceptable_actions = ['move', 'go', 'travel', 'walk',
-    #                       'quit', 'inspect', 'interact', 'look', 'examine']
     actionArr = action.split(' ')
-    # while action.lower() not in acceptable_actions:
-    #     print('Unknown action, try again.\n')
-    #     action = input('> ')
+
     if len(actionArr) == 1:
         if action.lower() in ['quit', 'q']:
-            os.system('clear')
-            sys.exit()
+            system('clear')
+            exit()
         elif action.lower() in ['gear', 'g', 'i', 'inventory']:
             my_player.check_gear()
         elif action.lower() in ['ex', 'examine']:
             print_room_items()
-            # print_room_items()
         elif action.lower() in ['n', 's', 'e', 'w', 'north', 'south', 'east', 'west', 'up', 'down', 'left', 'right']:
-            os.system('clear')
             player_move(action.lower())
     elif len(actionArr) == 2:
         if actionArr[0].lower() in ['get', 'take', 'grab', 'steal']:
@@ -130,16 +127,9 @@ def prompt(my_player):
             drop_item(actionArr[1])
     else:
         print('thats too many right now')
-        # acceptable_actions = ['move', 'go', 'travel', 'walk',
-        #                       'quit', 'inspect', 'interact', 'look', 'examine']
-    # elif action.lower() in ['inspect', 'interact', 'look', 'examine']:
-    #     self.player_examine(action.lower())
 
 
 def take_item(item):
-    #     for x in arr:
-    #   if item in x.values():
-    # print(x.values())
     item_present = False
     for i in my_player.current_room.items:
         if i.name == item:
@@ -147,12 +137,8 @@ def take_item(item):
             items[item].on_take()
             my_player.current_room.items.remove(items[item])
             item_present = True
-        # else:
     if not item_present:
         print('There is nothing by that name in this location')
-
-    # my_player.inventory.append(items[item])
-    # my_player.current_room.items.remove(items[item])
 
 
 def drop_item(item):
@@ -167,7 +153,6 @@ def no_access():
 
 
 def player_move(direction):
-    # ask = 'Where would you like to move to?\n'
     if direction in ['up', 'north', 'n']:
         if hasattr(my_player.current_room, 'n_to'):
             direction = my_player.current_room.n_to
@@ -197,93 +182,10 @@ def player_move(direction):
 def movement_handler(destination):
     print(f'\n You have moved to the {destination.name}')
     my_player.current_room = destination
-    os.system('clear')
+    system('clear')
     header()
+    generate_screen(my_player.current_room.name)
     print_location()
-
-
-def main_game_loop(player_name):
-    my_player.name = player_name
-    while my_player.is_playing:
-        prompt(my_player)
-    # * Prints the current room name
-    # * Prints the current description (the textwrap module might be useful here).
-    # * Waits for user input and decides what to do.
-    #
-    # If the user enters a cardinal direction, attempt to move to the room there.
-    # Print an error message if the movement isn't allowed.
-    #
-    # If the user enters "q", quit the game.
-
-    if __name__ == '__main__':
-        main_game_loop(player_name)
-
-
-#######################################
-#  Terminal Output Helpers
-#######################################
-
-
-def title_screen_selections():
-    option = input('> ')
-    if option.lower() in ['play', 'p']:
-        os.system('clear')
-        setup_game()
-    elif option.lower() in ['help', 'h']:
-        os.system('clear')
-        help_menu()
-    elif option.lower() in ['quit', 'q']:
-        os.system('clear')
-        sys.exit()
-    while option.lower() not in ['play', 'p', 'help', 'h', 'quit', 'q']:
-        os.system('clear')
-        print("please enter a valid command.")
-        title_screen_selections()
-
-
-def header():
-    print('#################################################')
-    print('#         Welcome to "Adventure Lurks"!         #')
-    print('#################################################' + '\n')
-
-
-def title_screen():
-    header()
-    print('- Play - ')
-    print('- Help - ')
-    print('- Quit - ')
-    title_screen_selections()
-
-
-def help_menu():
-    header()
-    print('  - Type "play" or "p" to start the game -    ')
-    print('  - Use "n", "s", "e", "w" to move -          ')
-    print('  - Use "examine" or "ex" to inspect surroundings -   ')
-    print('  - Use "quit" or "q" to stop the game -      ')
-    print('  - Type 2 commands to interact -             ')
-    print('  - Good luck and have fun!!! -               ')
-    print('  - Play - Help - Quit - ')
-    title_screen_selections()
-
-
-def cave_mouth():
-    print('OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO')
-    print('OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO')
-    print('OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOoOOooooooOoOOoOOOOO')
-    print('OOOOOOOOOOOOOOOOOOOOOOOOOOOoooo/[[/**`\ooooooOOOO')
-    print('OOOOOoOOOOOOOOOOOOOOOOOOOOoo`*.      ..**,\oOOOOO')
-    print('O/OO^=[OOOOOOOOOOOOOOOo//o/`.           .**ooOOOO')
-    print('O///O=*=OOOOOOOOOOOOO^/O/ ..             .,,OooOO')
-    print('O/O/O\,OOOOOOOOOOOO[O=Oo` .              .]/oOOOO')
-    print('/.O`=.=OOOOOOOOOOOO^O=OO\`,.          .,.=o^OOOOO')
-    print('/\O\O/=OOOOOOOOOOOO\/.O\/`/. ./o`  .\=o/OOO[/OOO/')
-    print('`OO,O.O.O\,\OOOOOO\O\]//o[\  ...`..``\=`,\OO[^,O/')
-    print('O\O\`\/\,/` /]`        ,[[ =`.   ` /, `,.,//O/OOO')
-    print('/,O//OOOO],[.]`                    .///`OOOOOOOOO')
-    print('\OOOOOOOOOO][=/[.             `]O\OOOOOOOOOOOOOOO')
-    print('/OOOOOOOOO/\OO]/O\` ,``]^\OOOOOOOOOOOOOOOOOOOOOOO')
-    print('OOOOOOOOOOOOOOOOO\=OOOO\OO^\OOOOOOOOOOOOOOOOOOOOO' + '\n')
 
 
 #######################################
@@ -291,16 +193,16 @@ def cave_mouth():
 #######################################
 
 def setup_game():
-    os.system('clear')
+    system('clear')
+    header()
 
     ######## NAME COLLECTING ########
     question1 = 'Hello, what is your name?\n'
     for character in question1:
-        sys.stdout.write(character)
-        sys.stdout.flush()
-        time.sleep(0.05)
+        stdout.write(character)
+        stdout.flush()
+        sleep(0.05)
     player_name = input('> ')
-    # my_player.name = player_name
 
     ######## INTRODUCTION ########
     speech1 = 'Welcome, ' + player_name + " to this fantasy world! \n"
@@ -308,24 +210,24 @@ def setup_game():
     speech3 = "Just make sure you don't get too lost!!! \n"
     speech4 = "Muah ha ha ha ha......! \n"
     for character in speech1:
-        sys.stdout.write(character)
-        sys.stdout.flush()
-        time.sleep(0.03)
+        stdout.write(character)
+        stdout.flush()
+        sleep(0.03)
     for character in speech2:
-        sys.stdout.write(character)
-        sys.stdout.flush()
-        time.sleep(0.03)
+        stdout.write(character)
+        stdout.flush()
+        sleep(0.03)
     for character in speech3:
-        sys.stdout.write(character)
-        sys.stdout.flush()
-        time.sleep(0.1)
+        stdout.write(character)
+        stdout.flush()
+        sleep(0.1)
     for character in speech4:
-        sys.stdout.write(character)
-        sys.stdout.flush()
-        time.sleep(0.2)
-    os.system('clear')
+        stdout.write(character)
+        stdout.flush()
+        sleep(0.2)
+    system('clear')
     header()
-    cave_mouth()
+    generate_screen('Outside The Cave Entrance')
     print_location()
     main_game_loop(player_name)
 
