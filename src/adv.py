@@ -140,14 +140,18 @@ def take_item(item):
     #     for x in arr:
     #   if item in x.values():
     # print(x.values())
-    # for i in my_player.current_room.items:
-    #     if item in my_player.current_room.items:
-    #         my_player.inventory.append(items[item])
-    #         my_player.current_room.items.remove(items[item])
-    #     else:
-    #         print('There is nothing by that name in this location')
-    my_player.inventory.append(items[item])
-    my_player.current_room.items.remove(items[item])
+    item_present = False
+    for i in my_player.current_room.items:
+        if i.name == item:
+            my_player.inventory.append(items[item])
+            my_player.current_room.items.remove(items[item])
+            item_present = True
+        # else:
+    if not item_present:
+        print('There is nothing by that name in this location')
+
+    # my_player.inventory.append(items[item])
+    # my_player.current_room.items.remove(items[item])
 
 
 def drop_item(item):
