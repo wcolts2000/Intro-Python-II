@@ -133,47 +133,47 @@ it.)
 naturally illuminated, or `False` if a `LightSource` is required to see what
 is in the room.
 
-- Modify the main loop to test if there is light in the `Room` (i.e. if
-  `is_light` is `True` **or** there is a `LightSource` item in the `Room`'s
-  contents **or** if there is a `LightSource` item in the `Player`'s contents).
+[x] - Modify the main loop to test if there is light in the `Room` (i.e. if
+`is_light` is `True` **or** there is a `LightSource` item in the `Room`'s
+contents **or** if there is a `LightSource` item in the `Player`'s contents).
 
-- If there is light in the room, display name, description, and contents as
-  normal.
+[x] - If there is light in the room, display name, description, and contents as
+normal.
 
-- If there isn't, print out "It's pitch black!" instead.
+[x] - If there isn't, print out "It's pitch black!" instead.
 
-- Hint: `isinstance` might help you figure out if there's a `LightSource`
-  among all the nearby `Item`s.
+[x] - Hint: `isinstance` might help you figure out if there's a `LightSource`
+among all the nearby `Item`s.
 
-- Modify the `get`/`take` code to print "Good luck finding that in the dark!" if
-  the user tries to pick up an `Item` in the dark.
+[x] - Modify the `get`/`take` code to print "Good luck finding that in the dark!" if
+the user tries to pick up an `Item` in the dark.
 
-- Add methods to notify items when they are picked up or dropped
+[x] - Add methods to notify items when they are picked up or dropped
 
-- Add light and darkness to the game
+[x] - Add light and darkness to the game
 
-- Add more items to the game.
+[x] - Add more items to the game.
 
 - Add a way to win.
 
-- Add more to the parser.
+[x] - Add more to the parser.
 
-  - Remember the last `Item` mentioned and substitute that if the user types
-    "it" later, e.g.
+- Remember the last `Item` mentioned and substitute that if the user types
+  "it" later, e.g.
 
-    ```
-    take sword
-    drop it
-    ```
+  ```
+  take sword
+  drop it
+  ```
 
-  - Add `Item`s with adjectives, like "rusty sword" and "silver sword".
+- Add `Item`s with adjectives, like "rusty sword" and "silver sword".
 
-    - Modify the parser to handle commands like "take rusty sword" as well as
-      "take sword".
+  - Modify the parser to handle commands like "take rusty sword" as well as
+    "take sword".
 
-      - If the user is in a room that contains both the rusty sword _and_ silver
-        sword, and they type "take sword", the parser should say, "I don't know
-        which you mean: rusty sword or silver sword."
+    - If the user is in a room that contains both the rusty sword _and_ silver
+      sword, and they type "take sword", the parser should say, "I don't know
+      which you mean: rusty sword or silver sword."
 
 - Modify the code that calls `on_take` to check the return value. If `on_take`
   returns `False`, then don't continue picking up the object. (I.e. prevent the

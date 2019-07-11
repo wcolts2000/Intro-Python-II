@@ -134,6 +134,9 @@ def prompt(my_player):
         if actionArr[0].lower() in ['get', 'take', 'grab', 'steal']:
             take_item(actionArr[1])
         elif actionArr[0].lower() in ['drop', 'remove', 'throw', 'steal']:
+            if actionArr[1].lower() == 'lamp':
+                room['narrow'].is_light = False
+                room['treasure'].is_light = False
             drop_item(actionArr[1])
     else:
         print('thats too many right now')
@@ -200,12 +203,16 @@ def movement_handler(destination):
     else:
         if len(my_player.current_room.items):
             for i in my_player.current_room.items:
+                print('Firing in room items for loop')
                 if isinstance(i, Lightsource):
+                    print('Firing in isinstance')
                     my_player.current_room.is_light = True
                     generate_screen(my_player.current_room.name)
-        if len(my_player.inventory):
+        elif len(my_player.inventory):
+            print('Firing in player inventory for loop')
             for i in my_player.inventory:
                 if isinstance(i, Lightsource):
+                    print('Firing in isinstance')
                     my_player.current_room.is_light = True
                     generate_screen(my_player.current_room.name)
         else:
