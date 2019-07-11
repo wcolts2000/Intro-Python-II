@@ -96,6 +96,7 @@ def print_location():
         else:
             print('You enter the ' + my_player.current_room.name + '\n')
         print(f'    > {my_player.current_room.description}' + '\n')
+        print_room_items()
     else:
         print("It's pitch black in here!")
 
@@ -123,7 +124,10 @@ def prompt(my_player):
         elif action.lower() in ['gear', 'g', 'i', 'inventory']:
             my_player.check_gear()
         elif action.lower() in ['ex', 'examine']:
-            print_room_items()
+            if my_player.current_room.is_light:
+                print_room_items()
+            else:
+                print("With no light, you can't see anything in here...")
         elif action.lower() in ['n', 's', 'e', 'w', 'north', 'south', 'east', 'west', 'up', 'down', 'left', 'right']:
             player_move(action.lower())
     elif len(actionArr) == 2:
@@ -190,10 +194,22 @@ def movement_handler(destination):
     my_player.current_room = destination
     system('clear')
     header()
+
     if my_player.current_room.is_light:
         generate_screen(my_player.current_room.name)
     else:
-        generate_screen('Pitch Black')
+        if len(my_player.current_room.items):
+            for i in my_player.current_room.items:
+                if isinstance(i, Lightsource):
+                    my_player.current_room.is_light = True
+                    generate_screen(my_player.current_room.name)
+        if len(my_player.inventory):
+            for i in my_player.inventory:
+                if isinstance(i, Lightsource):
+                    my_player.current_room.is_light = True
+                    generate_screen(my_player.current_room.name)
+        else:
+            generate_screen('Pitch Black')
     print_location()
 
 
