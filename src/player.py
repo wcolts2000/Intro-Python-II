@@ -24,28 +24,28 @@ class Player(object):
     def no_access(self):
         print('\n' + 'There is nothing in that direction to move to')
 
-    def player_move(self, direction, movement_handler):
+    def player_move(self, direction, screen_generator_helper):
         if direction in ['up', 'north', 'n']:
             if hasattr(self.current_room, 'n_to'):
                 direction = self.current_room.n_to
-                movement_handler(direction)
+                screen_generator_helper(direction)
             else:
                 self.no_access()
         elif direction in ['left', 'west', 'w']:
             if hasattr(self.current_room, 'w_to'):
                 direction = self.current_room.w_to
-                movement_handler(direction)
+                screen_generator_helper(direction)
             else:
                 self.no_access()
         elif direction in ['right', 'east', 'e']:
             if hasattr(self.current_room, 'e_to'):
                 direction = self.current_room.e_to
-                movement_handler(direction)
+                screen_generator_helper(direction)
             else:
                 self.no_access()
         elif direction in ['down', 'south', 's']:
             if hasattr(self.current_room, 's_to'):
                 direction = self.current_room.s_to
-                movement_handler(direction)
+                screen_generator_helper(direction)
             else:
                 self.no_access()

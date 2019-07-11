@@ -89,8 +89,8 @@ def main_game_loop(player_name):
     exit()
 
 
-def print_location():
-    if my_player.current_room.is_light:
+def print_location(is_lit):
+    if is_lit:
         if my_player.current_room.name == "Outside The Cave Entrance":
             print('You stand ' + my_player.current_room.name + '\n')
         else:
@@ -129,7 +129,7 @@ def prompt(my_player):
             else:
                 print("With no light, you can't see anything in here...")
         elif action.lower() in ['n', 's', 'e', 'w', 'north', 'south', 'east', 'west', 'up', 'down', 'left', 'right']:
-            my_player.player_move(action.lower(), movement_handler)
+            my_player.player_move(action.lower(), screen_generator_helper)
     elif len(actionArr) == 2:
         if actionArr[0].lower() in ['get', 'take', 'grab', 'steal']:
             take_item(actionArr[1])
@@ -160,27 +160,28 @@ def drop_item(item):
     my_player.inventory.remove(items[item])
 
 
-def movement_handler(destination):
+def screen_generator_helper(destination):
     my_player.current_room = destination
     system('clear')
     header()
 
+    room_lit = False
+
     if my_player.current_room.is_light:
+        room_lit = True
+    if len(my_player.current_room.items):
+        for i in my_player.current_room.items:
+            if isinstance(i, Lightsource):
+                room_lit = True
+    if len(my_player.inventory):
+        for i in my_player.inventory:
+            if isinstance(i, Lightsource):
+                room_lit = True
+    if room_lit:
         generate_screen(my_player.current_room.name)
     else:
-        if len(my_player.current_room.items):
-            for i in my_player.current_room.items:
-                if isinstance(i, Lightsource):
-                    my_player.current_room.is_light = True
-                    generate_screen(my_player.current_room.name)
-        if len(my_player.inventory):
-            for i in my_player.inventory:
-                if isinstance(i, Lightsource):
-                    my_player.current_room.is_light = True
-                    generate_screen(my_player.current_room.name)
-        else:
-            generate_screen('Pitch Black')
-    print_location()
+        generate_screen('Pitch Black')
+    print_location(room_lit)
 
 
 #######################################
@@ -223,7 +224,7 @@ def setup_game():
     system('clear')
     header()
     generate_screen('Outside The Cave Entrance')
-    print_location()
+    print_location(True)
     main_game_loop(player_name)
 
 
