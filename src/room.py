@@ -4,11 +4,12 @@
 
 class Room(object):
 
-    def __init__(self, name, description, items):
+    def __init__(self, name, description, items, illuminated):
         self.name = name
         self.description = description
         self.completed = False
         self.items = items
+        self.is_light = illuminated
 
     def __str__(self):
         str = f"""

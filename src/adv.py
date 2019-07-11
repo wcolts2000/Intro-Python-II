@@ -5,14 +5,14 @@ import random
 
 from room import Room
 from player import Player
-from item import Item
-from splash_screen import *
+from item import Item, Lightsource
+from splash_screen import generate_screen, help_menu, title_screen, grave, header
 
 
 # Declare all the items
 
 items = {
-    'lamp': Item('lamp', 'an oil lamp with a wick still intact'),
+    'lamp': Lightsource('lamp', 'an oil lamp with a wick still intact'),
     'oil': Item('oil', 'a vial of lamp oil'),
     'key': Item('key', 'a rusty key'),
     'rock': Item('rock', 'an oddly shaped rock...Perhaps it was chisseled to fit something.'),
@@ -27,21 +27,21 @@ items = {
 
 room = {
     'outside':  Room("Outside The Cave Entrance",
-                     "North of you, the cave mouth beckons", []),
+                     "North of you, the cave mouth beckons", [], True),
 
     'foyer':    Room("Foyer", """Dim light filters in from the south. Dusty
-passages run north and east.""", []),
+passages run north and east.""", [], True),
 
     'overlook': Room("Grand Overlook", """A steep cliff appears before you, falling
 into the darkness. Ahead to the north, a light flickers in
-the distance, but there is no way across the chasm.""", []),
+the distance, but there is no way across the chasm.""", [], True),
 
     'narrow':   Room("Narrow Passage", """The narrow passage bends here from west
-to north. The smell of gold permeates the air.""", []),
+to north. The smell of gold permeates the air.""", [], False),
 
     'treasure': Room("Treasure Chamber", """You've found the long-lost treasure
 chamber! Sadly, it has already been completely emptied by
-earlier adventurers. The only exit is to the south.""", []),
+earlier adventurers. The only exit is to the south.""", [], False),
 }
 
 
@@ -84,14 +84,20 @@ def main_game_loop(player_name):
     my_player.name = player_name
     while my_player.is_playing:
         prompt(my_player)
+    grave(my_player.name, my_player.inventory)
+    print("Game Over! Goodbye..." + '\n')
+    exit()
 
 
 def print_location():
-    if my_player.current_room.name == "Outside The Cave Entrance":
-        print('You stand ' + my_player.current_room.name + '\n')
+    if my_player.current_room.is_light:
+        if my_player.current_room.name == "Outside The Cave Entrance":
+            print('You stand ' + my_player.current_room.name + '\n')
+        else:
+            print('You enter the ' + my_player.current_room.name + '\n')
+        print(f'    > {my_player.current_room.description}' + '\n')
     else:
-        print('You enter the ' + my_player.current_room.name + '\n')
-    print(f'    > {my_player.current_room.description}' + '\n')
+        print("It's pitch black in here!")
 
 
 def print_room_items():
@@ -184,7 +190,10 @@ def movement_handler(destination):
     my_player.current_room = destination
     system('clear')
     header()
-    generate_screen(my_player.current_room.name)
+    if my_player.current_room.is_light:
+        generate_screen(my_player.current_room.name)
+    else:
+        generate_screen('Pitch Black')
     print_location()
 
 
