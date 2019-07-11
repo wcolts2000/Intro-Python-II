@@ -144,6 +144,7 @@ def take_item(item):
     for i in my_player.current_room.items:
         if i.name == item:
             my_player.inventory.append(items[item])
+            items[item].on_take()
             my_player.current_room.items.remove(items[item])
             item_present = True
         # else:
@@ -156,6 +157,7 @@ def take_item(item):
 
 def drop_item(item):
     my_player.current_room.items.append(items[item])
+    items[item].on_drop()
     my_player.inventory.remove(items[item])
 
 
