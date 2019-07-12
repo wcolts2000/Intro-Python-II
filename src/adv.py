@@ -1,5 +1,5 @@
 from sys import stdout, exit
-from os import system
+from os import system, name
 from time import sleep
 import random
 
@@ -7,6 +7,15 @@ from room import Room
 from player import Player
 from item import Item, Lightsource
 from splash_screen import generate_screen, help_menu, title_screen, grave, header
+
+
+def clear():
+    # for windows
+    if name == 'nt':
+        _ = system('cls')
+    # for mac and linux(here, os.name is 'posix')
+    else:
+        _ = system('clear')
 
 
 # Declare all the items
@@ -73,7 +82,8 @@ my_player = Player('', room['outside'])
 
 
 def main():
-    system('clear')
+    # system('clear')
+    clear()
     title_screen(setup_game)
 
     if __name__ == '__main__':
@@ -119,7 +129,8 @@ def prompt(my_player):
 
     if len(actionArr) == 1:
         if action.lower() in ['quit', 'q']:
-            system('clear')
+            # system('clear')
+            clear()
             exit()
         elif action.lower() in ['gear', 'g', 'i', 'inventory']:
             my_player.check_gear()
@@ -162,7 +173,8 @@ def drop_item(item):
 
 def screen_generator_helper(destination):
     my_player.current_room = destination
-    system('clear')
+    # system('clear')
+    clear()
     header()
 
     room_lit = False
@@ -189,7 +201,8 @@ def screen_generator_helper(destination):
 #######################################
 
 def setup_game():
-    system('clear')
+    # system('clear')
+    clear()
     header()
 
     ######## NAME COLLECTING ########
@@ -221,7 +234,8 @@ def setup_game():
         stdout.write(character)
         stdout.flush()
         sleep(0.2)
-    system('clear')
+    # system('clear')
+    clear()
     header()
     generate_screen('Outside The Cave Entrance')
     print_location(True)
