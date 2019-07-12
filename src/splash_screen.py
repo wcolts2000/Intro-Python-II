@@ -1,5 +1,14 @@
 from sys import stdout, exit
-from os import system
+from os import system, name
+
+
+def clear():
+    # for windows
+    if name == 'nt':
+        _ = system('cls')
+    # for mac and linux(here, os.name is 'posix')
+    else:
+        _ = system('clear')
 
 
 def outside():
@@ -186,16 +195,16 @@ def dark():
 def title_screen_selections(setup_game):
     option = input('> ')
     if option.lower() in ['play', 'p']:
-        system('clear')
+        clear()
         setup_game()
     elif option.lower() in ['help', 'h']:
-        system('clear')
+        clear()
         help_menu(setup_game)
     elif option.lower() in ['quit', 'q']:
-        system('clear')
+        clear()
         exit()
     while option.lower() not in ['play', 'p', 'help', 'h', 'quit', 'q']:
-        system('clear')
+        clear()
         print("please enter a valid command.")
         title_screen_selections(setup_game)
 
